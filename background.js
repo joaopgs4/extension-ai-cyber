@@ -125,3 +125,46 @@ browser.runtime.onMessage.addListener((msg,sender,sendResponse)=>{
   }
   return true;
 });
+
+let manualBlockedUrls = []; // can contain full URLs or domains
+
+// helper to check if a URL matches a manual blocked entry
+function matchesManualBlocked(url) {
+    try {
+        const u = new URL(url);
+        const hostname = u.hostname.toLowerCase();
+        for (const entry of manualBlockedUrls) {
+            const e = entry.trim().toLowerCase();
+            if (e === hostname) return true;               // exact domain match
+            if (hostname.endsWith('.' + e)) return true;  // subdomain match
+            if (url === e) return true;                   // exact full URL match
+        }
+    } catch (e) {
+        // fallback for malformed URL
+        return manualBlockedUrls.includes(url);
+    }
+    return false;
+}
+
+// replace previous check inside matchesEasyList
+function matchesEasyList(url){
+    if(matchesManualBlocked(url)) return true;
+    if(!easyListRules || easyListRules.length === 0) return false;
+    try { for(const re of easyListRules) if(re.test(url)) return true; } catch(e){}
+    return false;
+}
+
+// Messages to add/remove manual URLs
+browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (!msg) return;
+    if (msg.action === 'addManualBlockedUrl') {
+        if (!manualBlockedUrls.includes(msg.url)) manualBlockedUrls.push(msg.url);
+        sendResponse({ok:true});
+    } else if (msg.action === 'removeManualBlockedUrl') {
+        manualBlockedUrls = manualBlockedUrls.filter(u => u !== msg.url);
+        sendResponse({ok:true});
+    } else if (msg.action === 'getManualBlockedUrls') {
+        sendResponse(manualBlockedUrls);
+    }
+});
+
