@@ -115,6 +115,45 @@
 
     injectScript(pageHook);
 
+    // --- Extra security monitoring ---
+    const pageHookExtra = `
+        (function() {
+        function send(obj){ window.postMessage({ __api_mapper: true, payload: obj }, "*"); }
+
+        // Canvas fingerprint detection
+        const HTMLCanvasProto = HTMLCanvasElement.prototype;
+        ['toDataURL','toBlob'].forEach(fnName => {
+            const nativeFn = HTMLCanvasProto[fnName];
+            if(nativeFn){
+            HTMLCanvasProto[fnName] = function(){
+                try { send({ type:'canvas-fingerprint', method:fnName, width:this.width, height:this.height }); } catch(e){}
+                return nativeFn.apply(this, arguments);
+            };
+            }
+        });
+
+        // Suspicious hook / hijack detection
+        const sensitiveAPIs = [
+            {obj:window,name:'alert'}, {obj:window,name:'confirm'}, {obj:window,name:'prompt'},
+            {obj:window.history,name:'pushState'}, {obj:window.history,name:'replaceState'},
+            {obj:Document.prototype,name:'write'}, {obj:Document.prototype,name:'writeln'}
+        ];
+        sensitiveAPIs.forEach(api=>{
+            const original = api.obj[api.name];
+            if(original){
+            Object.defineProperty(api.obj, api.name, {
+                configurable:true, enumerable:true, writable:true,
+                value:function(){
+                try { send({ type:'suspicious-hook', api:api.name, args:Array.from(arguments) }); } catch(e){}
+                return original.apply(this, arguments);
+                }
+            });
+            }
+        });
+        })();
+    `;
+    inject(pageHookExtra);
+
     // --- Listen for messages from page context and forward to background ---
     window.addEventListener('message', function(event){
         if (!event.data || !event.data.__api_mapper) return;

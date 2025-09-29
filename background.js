@@ -218,7 +218,8 @@ browser.runtime.onMessage.addListener((msg,sender,sendResponse)=>{
     const requests=state.requests.slice();
     const cookies=state.cookies.slice();
     const pageMessages=state.pageMessages.slice();
-
+    const canvasFingerprintCount = pageMessages.filter(m => m.type==='canvas-fingerprint').length;
+    const suspiciousHooksCount = pageMessages.filter(m => m.type==='suspicious-hook').length;
     const totalRequests=requests.length;
     const thirdPartyRequests=requests.filter(r=>r.thirdParty===true).length;
     const totalSetCookieFromResponses=requests.reduce((acc,r)=>acc+(r.setCookieCount||0),0);
@@ -241,15 +242,17 @@ browser.runtime.onMessage.addListener((msg,sender,sendResponse)=>{
     }
 
     sendResponse({
-      summary:{
-        totalRequests,
-        thirdPartyRequests,
-        totalSetCookieFromResponses,
-        cookieSourceCounts,
-        dangerousRequests,
-        blockedRequests
-      },
-      tabs
+        summary:{
+            totalRequests,
+            thirdPartyRequests,
+            totalSetCookieFromResponses,
+            cookieSourceCounts,
+            dangerousRequests,
+            blockedRequests,
+            canvasFingerprints: canvasFingerprintCount,
+            suspiciousHooks: suspiciousHooksCount
+        },
+        tabs
     });
   }
   return true;
