@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "API & Cookie Mapper (university template)",
+  "version": "1.0",
+  "description": "Maps requests, third-party calls, and cookie sources.",
+  "permissions": [
+    "<all_urls>",
+    "webRequest",
+    "webRequestBlocking",
+    "cookies",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "browser_action": {
+    "default_title": "API & Cookie Mapper",
+    "default_popup": "popup.html"
+  }
+}
