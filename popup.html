@@ -3,22 +3,59 @@
 <head>
 <meta charset="utf-8">
 <style>
-body { font-family: system-ui, Arial; margin:10px; width:600px; }
-button { padding:5px 10px; margin-right:5px; }
-#controls { margin-bottom:10px; }
-ul { list-style:none; padding-left:20px; }
-li { margin:2px 0; cursor: pointer; }
-li span { user-select:none; }
-input[type=text]{ width:300px; padding:2px; margin-right:5px;}
+/* Basic styling for popup */
+body { 
+    font-family: system-ui, Arial; 
+    margin: 10px; 
+    width: 600px; 
+}
+
+/* Buttons styling */
+button { 
+    padding: 5px 10px; 
+    margin-right: 5px; 
+}
+
+/* Container for controls */
+#controls { 
+    margin-bottom: 10px; 
+}
+
+/* Tree view styling */
+ul { 
+    list-style: none; 
+    padding-left: 20px; 
+}
+
+li { 
+    margin: 2px 0; 
+    cursor: pointer; 
+}
+
+li span { 
+    user-select: none; /* Prevent text selection when toggling */
+}
+
+/* Input box for adding manual blocked URL */
+input[type=text]{ 
+    width: 300px; 
+    padding: 2px; 
+    margin-right: 5px;
+}
 </style>
 </head>
 <body>
+<!-- Controls: refresh button + manual URL input + add button -->
 <div id="controls">
   <button id="refresh">Refresh</button>
   <input type="text" id="newLink" placeholder="Enter URL to block"/>
   <button id="addLink">Add</button>
 </div>
+
+<!-- Container for displaying captured requests/cookies/tree view -->
 <div id="tree"></div>
-</body>
+
+<!-- Load popup JavaScript -->
 <script src="popup.js"></script>
+</body>
 </html>

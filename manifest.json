@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "API & Cookie Mapper (university template)",
+  "name": "AI Cybersec 25.2 - Sarti",
   "version": "1.0",
-  "description": "Maps requests, third-party calls, and cookie sources.",
+  "description": "Avaliação Intermediaria de CyberSec",
   "permissions": [
     "<all_urls>",
     "webRequest",
